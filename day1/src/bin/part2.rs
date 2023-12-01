@@ -13,7 +13,6 @@ fn main() {
                 .replace("seven", "s7n")
                 .replace("eight", "e8t")
                 .replace("nine", "n9e");
-            // dbg!(&line);
             let mut iter = line
                 .chars()
                 .filter(char::is_ascii_digit)
@@ -24,7 +23,6 @@ fn main() {
 
             first * 10 + last
         })
-        // .map(|n| dbg!(n))
         .sum();
 
     answer!("The sum of all of the calibration values is {}.", output);

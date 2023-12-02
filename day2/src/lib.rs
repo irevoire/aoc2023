@@ -24,6 +24,22 @@ pub struct Set {
     pub blue: usize,
 }
 
+impl Set {
+    /// The power of a set of cubes is equal to the numbers of red, green, and blue cubes multiplied together.
+    pub fn power(self) -> usize {
+        self.red * self.green * self.blue
+    }
+
+    /// Return the minimum number of cubes required to play both game
+    pub fn min(&self, other: &Self) -> Self {
+        Self {
+            red: self.red.max(other.red),
+            green: self.green.max(other.green),
+            blue: self.blue.max(other.blue),
+        }
+    }
+}
+
 impl FromStr for Set {
     type Err = ();
 

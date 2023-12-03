@@ -78,7 +78,7 @@ fn main() {
 
     println!("{grid}");
 
-    let mut seen: HashMap<*mut usize, usize> = HashMap::new();
+    let mut part_number: HashMap<*mut usize, usize> = HashMap::new();
 
     for (coord, cell) in grid.enumerate() {
         if let Cell::Number(n) = cell {
@@ -103,13 +103,57 @@ fn main() {
             .filter_map(|coord| *coord)
             {
                 if let Some(Cell::Symbol(_)) = grid.get(coord) {
-                    seen.insert(n.as_ptr(), n.load(Ordering::Relaxed));
+                    part_number.insert(n.as_ptr(), n.load(Ordering::Relaxed));
                 }
             }
         }
     }
 
-    let ret: usize = seen.values().sum();
+    let ret: usize = part_number.values().sum();
 
     answer!("{}", ret);
+
+    // part 2
+    let mut gear_ratio = 0;
+
+    for (coord, cell) in grid.enumerate() {
+        if let Cell::Symbol('*') = cell {
+            let mut numbers = Vec::new();
+            // check around
+            for coord in [
+                coord
+                    .checked_add(Direction::North)
+                    .and_then(|coord| coord.checked_add(Direction::West)),
+                coord.checked_add(Direction::North),
+                coord
+                    .checked_add(Direction::North)
+                    .map(|coord| coord + Direction::East),
+                coord.checked_add(Direction::West),
+                Some(coord + Direction::East),
+                coord
+                    .checked_add(Direction::West)
+                    .map(|coord| coord + Direction::South),
+                Some(coord + Direction::South),
+                Some(coord + Direction::South + Direction::East),
+            ]
+            .iter()
+            .filter_map(|coord| *coord)
+            {
+                if let Some(Cell::Number(cell)) = grid.get(coord) {
+                    if part_number.contains_key(&cell.as_ptr()) {
+                        numbers.push(cell.as_ptr());
+                    }
+                }
+            }
+            numbers.sort_unstable();
+            numbers.dedup();
+            if numbers.len() == 2 {
+                let a = part_number[&numbers[0]];
+                let b = part_number[&numbers[1]];
+                gear_ratio += a * b;
+            }
+        }
+    }
+
+    answer!("{}", gear_ratio);
 }

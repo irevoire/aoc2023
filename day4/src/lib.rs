@@ -2,7 +2,7 @@ use std::{collections::HashSet, str::FromStr};
 
 #[derive(Debug)]
 pub struct Card {
-    id: usize,
+    pub id: usize,
     winning: HashSet<usize>,
     numbers: Vec<usize>,
 }
@@ -13,6 +13,13 @@ impl Card {
             .iter()
             .filter(|n| self.winning.contains(n))
             .fold(0, |acc, _n| if acc == 0 { acc + 1 } else { acc * 2 })
+    }
+
+    pub fn matching_numbers(&self) -> usize {
+        self.numbers
+            .iter()
+            .filter(|n| self.winning.contains(n))
+            .count()
     }
 }
 

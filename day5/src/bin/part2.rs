@@ -8,22 +8,20 @@ fn main() {
 
     let mappers: Vec<Mapper> = input.map(|mapper| mapper.parse().unwrap()).collect();
 
-    let ret = seeds
-        .0
-        .par_chunks(2)
-        .flat_map(|seeds| {
-            let mut locations = Vec::new();
-            for seed in seeds[0]..(seeds[0] + seeds[1]) {
-                let mut current = seed;
-                for mapper in mappers.iter() {
-                    current = mapper.map(current);
-                }
-                locations.push(current);
+    let mut ret = u64::MAX;
+
+    for seeds in seeds.0.chunks(2) {
+        let mut current = vec![seeds[0]..seeds[0] + seeds[1]];
+
+        for mapper in mappers.iter() {
+            let mut next = Vec::new();
+            for range in current {
+                next.append(&mut mapper.map_range(range));
             }
-            locations
-        })
-        .min()
-        .unwrap();
+            current = next;
+        }
+        ret = ret.min(current.iter().map(|range| range.start).min().unwrap());
+    }
 
     answer!("{}", ret);
 }

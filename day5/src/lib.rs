@@ -19,7 +19,7 @@ impl FromStr for Seeds {
 
 #[derive(Debug)]
 pub struct Mapper {
-    name: String,
+    _name: String,
 
     ranges: Vec<Map>,
 }
@@ -47,7 +47,7 @@ impl FromStr for Mapper {
         let ranges = lines.map(|line| line.parse().unwrap()).collect();
 
         Ok(Mapper {
-            name: name.to_string(),
+            _name: name.to_string(),
             ranges,
         })
     }
@@ -62,7 +62,7 @@ pub struct Map {
 
 impl Map {
     pub fn try_map(&self, value: u64) -> Option<u64> {
-        (self.src..=(self.src + self.size))
+        (self.src..self.src + self.size)
             .contains(&value)
             .then(|| value - self.src + self.dest)
     }

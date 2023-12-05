@@ -8,9 +8,6 @@ fn main() {
 
     let mappers: Vec<Mapper> = input.map(|mapper| mapper.parse().unwrap()).collect();
 
-    // dbg!(seeds);
-    // dbg!(mappers);
-
     let mut ret = u64::MAX;
 
     for seed in seeds.0 {
@@ -18,7 +15,6 @@ fn main() {
         for mapper in mappers.iter() {
             current = mapper.map(current);
         }
-        // println!("location: {current}");
         ret = ret.min(current);
     }
 

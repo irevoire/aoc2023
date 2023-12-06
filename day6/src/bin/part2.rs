@@ -29,14 +29,24 @@ fn main() {
     let races = parser::input::<Races>();
 
     let (duration, record) = races.0;
-    let mut count = 0;
+
+    let mut min = 0;
     for i in 1..duration {
         if final_distance(i, duration) > record {
-            count += 1;
+            min = i;
+            break;
         }
     }
 
-    answer!("{}", count);
+    let mut max = 0;
+    for i in (1..duration).rev() {
+        if final_distance(i, duration) > record {
+            max = i;
+            break;
+        }
+    }
+
+    answer!("{}", max - min + 1);
 }
 
 fn final_distance(start_after: usize, ends_at: usize) -> usize {

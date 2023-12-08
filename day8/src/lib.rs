@@ -18,7 +18,7 @@ pub fn parse() -> (Vec<Direction>, Graph<String, Direction, Directed>) {
         let current = current.trim();
         let (left, right) = children.split_once(',').unwrap();
         let [current, left, right] =
-            [current, left, right].map(|s| s.trim_matches(|c: char| !c.is_alphabetic()));
+            [current, left, right].map(|s| s.trim_matches(|c: char| !c.is_alphanumeric()));
 
         let current = tree.insert_value(current.to_string());
         let left = tree.insert_value(left.to_string());

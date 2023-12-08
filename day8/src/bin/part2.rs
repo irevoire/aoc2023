@@ -8,24 +8,59 @@ fn main() {
         .filter(|s| s.ends_with(|c| c == 'A' || c == 'Z'))
         .partition(|s| s.ends_with('A'));
 
-    let mut currents: Vec<_> = starts
+    let currents: Vec<_> = starts
         .into_iter()
         .map(|s| tree.get_id(s).unwrap())
         .collect();
     let ends: Vec<_> = ends.into_iter().map(|s| tree.get_id(s).unwrap()).collect();
 
-    let mut steps = 0;
-    for direction in directions.iter().cycle() {
-        if currents.iter().all(|current| ends.contains(current)) {
-            break;
-        }
+    let loops = currents
+        .par_iter()
+        .map(|current| {
+            let mut current = *current;
+            let mut ret = 0;
 
-        for current in currents.iter_mut() {
-            let edges = tree.get_edges(*current);
-            *current = edges.iter().find(|(_, dir)| dir == direction).unwrap().0;
-        }
-        steps += 1;
-    }
+            for (step, direction) in directions.iter().cycle().enumerate() {
+                if ends.contains(&current) {
+                    ret = step;
+                    break;
+                }
+
+                let edges = tree.get_edges(current);
+                current = edges.iter().find(|(_, dir)| dir == direction).unwrap().0;
+            }
+            ret
+        })
+        .collect::<Vec<usize>>();
+
+    let steps = loops.iter().copied().reduce(lcm).unwrap();
 
     answer!("{} steps are required to reach ZZZ", steps);
+}
+
+/// Least Common Multiple
+/// Stolen from https://www.hackertouch.com/least-common-multiple-in-rust.html
+fn lcm(first: usize, second: usize) -> usize {
+    first * second / gcd(first, second)
+}
+
+/// Greatest Common Divisor
+fn gcd(first: usize, second: usize) -> usize {
+    let mut max = first;
+    let mut min = second;
+    if min > max {
+        let val = max;
+        max = min;
+        min = val;
+    }
+
+    loop {
+        let res = max % min;
+        if res == 0 {
+            return min;
+        }
+
+        max = min;
+        min = res;
+    }
 }
